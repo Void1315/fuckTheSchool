@@ -34,7 +34,6 @@ class Login(object):
     the_db = None
     code = 'xxxx'
     header = {
-        'Cookie' : 'ASP.NET_SessionId=mwmesqyvvkqvpbfaafglfeby',
         'Host':'59.69.173.117',
         'User-Agent':'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)'
     }
@@ -49,15 +48,19 @@ class Login(object):
         'typeName':'%D1%A7%C9%FA',
         'pcInfo':'''Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)x860 SN:NULL'''
     }
-
+    the_seed =  None
 
     def __init__(self,the_list):
         self.setInfo(the_list)
         
+    def setInfo(self,the_list):
+        self.postdata['UserID'] = the_list[0]
+        self.postdata['PassWord'] = the_list[1]
+
 
     def getInfo(self):
         the_info = GetInfo()
-        return (the_info.getInfo(self.header))
+        return (the_info.getInfo(self.the_seed))
 
     def test_user(self,html):
         doc = soup(html)
@@ -65,11 +68,8 @@ class Login(object):
             print('登陆成功！！！！')
             try:
                 the_date = self.getInfo()
-                list_ = []
-                list_.append(int(self.postdata['UserID']))
-                list_.append('2016-2017第二学期')
-                list_.append(str(the_date))
-                self.the_db.create_date((list_))
+                self.the_db.save_info(int(self.postdata['UserID']),'2016-2017第二学期',str(the_date))
+                print('退出')
             except Exception as e:
                 print('未成功写入')
                 self.logout()
@@ -84,26 +84,17 @@ class Login(object):
             print(doc.select('#divLogNote')[0].string)
             return False
 
-    def save_cook(self):
-        cookie = self.save_img()  # 保存图片
-        self.header['Cookie'] = cookie
-
     def save_img(self):
-        a = urllib.request.urlretrieve(self.img_url,self.img_name)
-        cookie = a[1]['Set-Cookie'][0:-8]
-        return cookie
+        self.the_seed = requests.Session()#保持会话
+        results = self.the_seed.get(self.img_url)
+        if results.status_code == 200:
+            open(self.img_name, 'wb').write(results.content)
 
     def the_send(self):
         self.postdata['cCode'] = self.code
-        to_postdata = urllib.parse.urlencode(self.postdata).encode()
-        req = urllib2.Request(self.send_url,data=to_postdata,headers=self.header)
-        result = urllib2.urlopen(req)
-        return (self.test_user(result.read().decode('gb2312')))
+        result = self.the_seed.post(self.send_url,data = self.postdata)
+        return (self.test_user(result.text))
 
-    def setInfo(self,the_list):
-        self.postdata['UserID'] = the_list[0]
-        self.postdata['PassWord'] = the_list[1]
-    
     def set_code(self,code):
         self.code = code
 
@@ -122,7 +113,7 @@ the_list_info = my_db.get_student()
 for i in the_list_info:
     the_obj = Login(list(i))
     the_obj.the_db = my_db
-    the_obj.save_cook()#保存cookie 还保存图片 
+    the_obj.save_img()#保存回话 还保存图片 
 
     img_obj = ReadImage(Image.open(the_obj.img_name))#传给 读取类
 
@@ -133,7 +124,7 @@ for i in the_list_info:
     while not the_obj.the_send():
         print("验证码失败...正在重试")
         time.sleep(1)
-        the_obj.save_cook()#保存cookie 还保存图片 
+        the_obj.save_img()#保存cookie 还保存图片 
         img_obj = ReadImage(Image.open(the_obj.img_name))#传给 读取类
         code = img_obj.get_code()#返回验证码
         the_obj.set_code(code)#设置验证码
