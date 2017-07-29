@@ -1,24 +1,24 @@
 from PIL import Image, ImageFilter
 import pytesseract
-
+import time
+import os
+from hongshui import HongShui
 
 class ReadImage(object):
 
-
+	threshold = 195
 	def __init__(self, img):
 		self.img = img
 
 	def get_bin_table(self,):
-	    threshold  =   155
+	    
 	    table  =  []
 	    for  i  in  range( 256 ):
-	        if  i  <  threshold:
+	        if  i  <  self.threshold:
 	            table.append(0)
 	        else:
 	            table.append(255)
 	    return table
-
-
 
 	def left_zone(self,img, x, y):
 	    sum = img.getpixel((x + 1, y)) + \
@@ -132,7 +132,6 @@ class ReadImage(object):
 	            list_img.append(self.remove_noise(img, x, y))
 	    return list_img
 
-
 	def read_img(self,img_):
 	    code = pytesseract.image_to_string(img_)
 	    return code
@@ -146,10 +145,38 @@ class ReadImage(object):
 	def return_code(self):
 	    list_img = []
 	    img = self.img
-	    # img = Image.open(img)
 	    img = self.to_black(img)
 	    list_img = self.clear_img(img)
 	    return self.read_img(self.list_set_img(list_img,img))
 
 	def get_code(self):
 		return self.return_code()
+
+	def no_novce(self,img):
+	    list_img = []
+	    img = self.img
+	    img = self.to_black(img)
+	    list_img = self.clear_img(img)
+	    img = self.list_set_img(list_img,img)
+	    return img
+	def save_splitImage(self,x1,y1,x2,y2):
+		print((x1,y1,x2,y2))
+		img = self.img.crop((x1,y1,x2,y2)).resize((20,20))
+		img.save("split_img/"+str(time.time())+".png",'PNG')
+		
+	def getSVMCode(self):
+		the_obj = HongShui()
+		img = self.to_black(self.img)
+		list_img = self.clear_img(img)
+		img = self.list_set_img(list_img,img)
+		return the_obj.splitImg(img)
+
+if __name__ == '__main__':
+	for root,dirs,files in os.walk("img/"):
+		for the_name in files:
+			img_ = Image.open("img/"+the_name)
+			the_imgObj = ReadImage(img_)
+			# the_imgObj.split_img()
+			img_ = the_imgObj.no_novce(img_)
+			print('成功')
+			img_.save("img/"+the_name,"PNG")

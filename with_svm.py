@@ -37,6 +37,7 @@ class SVMImage():
 		list_date = {index+1:i for index,i in enumerate(list_date)}
 		str_date = str(label)+" "+str(list_date)[1:-1].replace(" ",'').replace(","," ")+"\n"
 		return str_date
+		
 	def getSvmDate(self):
 		list_date = self.list_date
 		svmDate = {index+1:i for index,i in enumerate(list_date)}

@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup as soup
 import time
 from save_db import NewDB as MyDB
 from get_info_me import GetInfo
-
+import sys
 
 dict_config = {
     'host':'127.0.0.1',
@@ -68,8 +68,11 @@ class Login(object):
             print('登陆成功！！！！')
             try:
                 the_date = self.getInfo()
+                # print(the_date)
                 self.the_db.save_info(int(self.postdata['UserID']),'2016-2017第二学期',str(the_date))
                 print('退出')
+                self.logout()
+                # sys.exit(0)
             except Exception as e:
                 print('未成功写入')
                 self.logout()
@@ -117,15 +120,18 @@ for i in the_list_info:
 
     img_obj = ReadImage(Image.open(the_obj.img_name))#传给 读取类
 
+    # code = img_obj.get_code()#返回验证码
     code = img_obj.get_code()#返回验证码
-
     the_obj.set_code(code)#设置验证码
-
+    # Image.open(the_obj.img_name).show()
+    # print(code+"-----------")
+    
     while not the_obj.the_send():
         print("验证码失败...正在重试")
-        time.sleep(1)
+        # time.sleep(1)
         the_obj.save_img()#保存cookie 还保存图片 
         img_obj = ReadImage(Image.open(the_obj.img_name))#传给 读取类
+        # code = img_obj.getSVMCode()#返回验证码
         code = img_obj.get_code()#返回验证码
         the_obj.set_code(code)#设置验证码
 

@@ -2,11 +2,12 @@ from PIL import Image, ImageFilter
 import time
 import os
 import pytesseract
-from clear_img import ReadImage
+from with_svm import SVMImage
+# from clear_img import ReadImage
 class HongShui():
 	"""docstring for """
 	resize_x = 22
-	rexize_y = 22
+	resize_y = 22
 	def left_zone(self,img, x, y):
 	    sum_ = img.getpixel((x + 1, y)) + \
 	          img.getpixel((x + 1, y + 1)) + \
@@ -82,10 +83,14 @@ class HongShui():
 
 	def splitImg(self,img):
 		offset_x = 1
+		str_ = ''
 		for i in range(4):#循环四次
 			tuple_ = self.spilt_img(img,offset_x)#拆分出一个字符
 			img_1 = img.crop(tuple_).resize((self.resize_x,self.resize_y))#小和值大小
+			the_obj = SVMImage(img_1)
+			str_ = str_+str(the_obj.testDate())[:1]
 			try:
 				offset_x = tuple_[2]+1
 			except Exception as e:
 				break
+		return str_

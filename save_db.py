@@ -49,6 +49,7 @@ class NewDB():
 		'''
 		cur = self.connection.cursor()
 		effect_row = cur.execute(" UPDATE fractions SET content = %s WHERE num_id = %s AND content  <> %s ",(the_tulpe[2],str(the_tulpe[0]),the_tulpe[2]))
+		self.connection.commit()
 		if effect_row>0:
 			print('写入数据库')
 		else:
