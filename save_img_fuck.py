@@ -17,7 +17,7 @@ dict_config = {
     'host':'127.0.0.1',
     'user':'root',
     'passwd':'wqld1315',
-    'db':'db_students'
+    'db':'db_fuckschool'
 }
 
 
@@ -57,8 +57,7 @@ class Login(object):
         self.postdata['UserID'] = the_list[0]
         self.postdata['PassWord'] = the_list[1]
 
-
-    def getInfo(self):
+    def getNewInfo(self):
         the_info = GetInfo()
         return (the_info.getInfo(self.the_seed))
 
@@ -66,19 +65,20 @@ class Login(object):
         doc = soup(html)
         if doc.select('#divLogNote')[0].string == '正在加载权限数据...':
             print('登陆成功！！！！')
-            try:
-                the_date = self.getInfo()
-                # print(the_date)
-                self.the_db.save_info(int(self.postdata['UserID']),'2016-2017第二学期',str(the_date))
-                print('退出')
-                self.logout()
-                # sys.exit(0)
-            except Exception as e:
-                print('未成功写入')
-                self.logout()
-                raise e
-                
-
+            the_info = GetInfo(self.the_seed)
+            while True and len(the_info.year_list)>0:
+                try:
+                    the_date = the_info.getInfo()
+                    if not the_date[2]:
+                        continue
+                    self.the_db.save_info(str(self.postdata['UserID']),the_date[0],the_date[1],the_date[2])#学号 学年 学期 结果
+                except Exception as e:
+                    print('未成功写入....退出')
+                    self.logout()
+                    raise e
+                    break
+            print('退出')
+            self.logout()
             return True
         if doc.select('#divLogNote')[0].string == '账号或密码不正确！请重新输入。':
             print('密码错误'+str(self.postdata['UserID']))
