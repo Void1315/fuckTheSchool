@@ -82,6 +82,9 @@ class HongShui():
 	# def getCode(self):
 
 	def splitImg(self,img):
+		'''
+			拆分字符 读出验证码
+		'''
 		offset_x = 1
 		str_ = ''
 		for i in range(4):#循环四次

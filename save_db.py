@@ -61,7 +61,3 @@ class NewDB():
 			self.create_date(the_list)
 		else:
 			self.is_dbSetVal(the_list)
-
-if __name__ == '__main__':
-	my_db = NewDB(dict_config)
-	my_db.is_dbSetVal(the_table='fractions',the_primerVal='1',the_word='num_id',the_wordVal=2016010301)

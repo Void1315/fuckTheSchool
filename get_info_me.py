@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup as soup
 from pyquery import PyQuery as pq
 import re
 import json
+import sys
 dict_config = {
 	'host':'127.0.0.1',
 	'user':'root',
@@ -44,12 +45,13 @@ class GetInfo(object):
 		return doc.find('center')
 
 	def get_json(self,doc):
-		list_ ={}
+		# print("1\n")
 		json_list = {}
 		doc = pq(doc.prettify())
 		tb = doc('#ID_Table')
 		tr_list = tb('tr')
 		for i,tr in enumerate(tr_list.items()):
+			list_ ={}
 			for index,td in enumerate(tr('td').items()):
 				list_[index] = td.text()
 			json_list[i] = list_
@@ -57,8 +59,6 @@ class GetInfo(object):
 	def getInfo(self,the_seed):
 		doc = self.get_doc(the_seed,self.get_url)
 		self.get_txt_xm(doc)
-
 		doc = self.get_doc(the_seed,self.url)
-		self.get_json(doc)
 		return (self.get_json(doc))
 		# return (self.get_table(doc))

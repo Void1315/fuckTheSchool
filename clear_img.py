@@ -18,7 +18,7 @@ class ReadImage(object):
 	            table.append(0)
 	        else:
 	            table.append(255)
-	    return table
+	    return table#获得二值化 数组 用于初始化 黑白图
 
 	def left_zone(self,img, x, y):
 	    sum = img.getpixel((x + 1, y)) + \
@@ -29,8 +29,7 @@ class ReadImage(object):
 	    if sum >= 1020:
 	        return 255
 	    else:
-	        return 0
-
+	        return 0#左边界
 
 	def right_zone(self,img, x, y):
 	    sum = img.getpixel((x - 1, y)) + \
@@ -41,8 +40,7 @@ class ReadImage(object):
 	    if sum >= 1020:
 	        return 255
 	    else:
-	        return 0
-
+	        return 0#右边界
 
 	def up_zone(self,img, x, y):
 	    sum = img.getpixel((x - 1, y)) + \
@@ -53,9 +51,9 @@ class ReadImage(object):
 	    if sum >= 1020:
 	        return 255
 	    else:
-	        return 0
+	        return 0#上方边界
 
-	def down_zone(self,img, x, y):
+	def down_zone(self,img, x, y):#下方边界
 	    sum = img.getpixel((x - 1, y)) + \
 	          img.getpixel((x + 1, y)) + \
 	          img.getpixel((x - 1, y - 1)) + \
@@ -65,7 +63,6 @@ class ReadImage(object):
 	        return 255
 	    else:
 	        return 0
-
 
 	def min_zone(self,img, x, y):
 	    sum = img.getpixel((x - 1, y + 1)) + \
@@ -79,7 +76,7 @@ class ReadImage(object):
 	    if sum >= (255 * 6):
 	        return 255
 	    else:
-	        return 0
+	        return 0#中间区域
 
 	def remove_noise(self,img, x, y):
 	    cur_pixel = img.getpixel((x, y))
@@ -109,8 +106,7 @@ class ReadImage(object):
 	            else:
 	                return self.down_zone(img, x, y)
 
-	        return self.min_zone(img, x, y)
-
+	        return self.min_zone(img, x, y)#移除噪点
 
 	def list_set_img(self,list_img, img_):
 	    w, h = img_.size
@@ -149,34 +145,28 @@ class ReadImage(object):
 	    list_img = self.clear_img(img)
 	    return self.read_img(self.list_set_img(list_img,img))
 
-	def get_code(self):
-		return self.return_code()
-
 	def no_novce(self,img):
-	    list_img = []
-	    img = self.img
-	    img = self.to_black(img)
-	    list_img = self.clear_img(img)
-	    img = self.list_set_img(list_img,img)
-	    return img
-	def save_splitImage(self,x1,y1,x2,y2):
-		print((x1,y1,x2,y2))
-		img = self.img.crop((x1,y1,x2,y2)).resize((20,20))
-		img.save("split_img/"+str(time.time())+".png",'PNG')
+		'''
+		移除噪点
+		'''
+		list_img =[]
+		img = self.img
+		img = self.to_black(img)
+		list_img = self.clear_img(img)
+		img = self.list_set_img(list_img,img)
+		return img
 		
 	def getSVMCode(self):
+		'''
+			获得SVM验证码
+		'''
 		the_obj = HongShui()
 		img = self.to_black(self.img)
 		list_img = self.clear_img(img)
 		img = self.list_set_img(list_img,img)
 		return the_obj.splitImg(img)
-
-if __name__ == '__main__':
-	for root,dirs,files in os.walk("img/"):
-		for the_name in files:
-			img_ = Image.open("img/"+the_name)
-			the_imgObj = ReadImage(img_)
-			# the_imgObj.split_img()
-			img_ = the_imgObj.no_novce(img_)
-			print('成功')
-			img_.save("img/"+the_name,"PNG")
+	def get_code(self):
+		'''
+		外部获取验证码
+		'''
+		return self.return_code()
