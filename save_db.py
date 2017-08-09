@@ -30,10 +30,16 @@ class NewDB():
 		获取学生
 		'''
 		cur = self.connection.cursor()
-		sql = 'SELECT stu_num,stu_passwd FROM users'
+		sql = 'SELECT stu_num,stu_passwd FROM users where query <> 0 '
 		reCount = cur.execute(sql)
 		results = cur.fetchall()
 		return results
+
+	def set_query(self,the_list):#查询完 修改query字段 ，使之成为默认不查询
+		cur = self.connection.cursor()
+		sql = " UPDATE users SET QUERY = 0 WHERE stu_num = %s "
+		cur.execute(sql,the_list)
+		self.connection.commit()
 
 	def in_dbSet(self,the_primerVal):#
 		'''

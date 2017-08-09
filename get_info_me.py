@@ -30,7 +30,7 @@ class GetInfo(object):
 	info_num = 0
 	list_info = []
 	year_list = []
-	index = 0
+	index = 1
 
 	def __init__(self,the_seed):
 		self.the_seed = the_seed
@@ -84,9 +84,9 @@ class GetInfo(object):
 		year = self.year_list[0]
 		doc = self.get_doc(self.url)#获得带有表格的doc
 		i = self.index
-		if self.index==1:
-			self.index = 0#学期归位
+		if self.index==0:
+			self.index = 1#学期归位
 			del self.year_list[0]#删除这个年份
 		else:
-			self.index +=1
+			self.index -=1
 		return (str(year),str(i),self.get_json(doc))

@@ -14,8 +14,8 @@ from get_info_me import GetInfo
 import sys
 
 dict_config = {
-    'host':'127.0.0.1',
-    'user':'root',
+    'host':'101.201.71.119',
+    'user':'yhy',
     'passwd':'wqld1315',
     'db':'db_fuckschool'
 }
@@ -78,6 +78,7 @@ class Login(object):
                     raise e
                     break
             print('退出')
+            self.the_db.set_query(str(self.postdata['UserID']))#设置为不查询
             self.logout()
             return True
         if doc.select('#divLogNote')[0].string == '账号或密码不正确！请重新输入。':
