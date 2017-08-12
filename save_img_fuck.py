@@ -12,6 +12,7 @@ import time
 from save_db import NewDB as MyDB
 from get_info_me import GetInfo
 import sys
+from linkService import LinkService
 
 dict_config = {
     'host':'101.201.71.119',
@@ -110,12 +111,15 @@ class Login(object):
 
 
 my_db = MyDB(dict_config)#数据库连接
+the_link = LinkService()
 
+# the_list_info = my_db.get_student()
 
-the_list_info = my_db.get_student()
-
-for i in the_list_info:
-    the_obj = Login(list(i))
+# for i in the_list_info:
+while 1:
+    stu_data = the_link.witeData()
+    list_data = stu_data.split(',')
+    the_obj = Login(list_data)
     the_obj.the_db = my_db
     the_obj.save_img()#保存回话 还保存图片 
 
