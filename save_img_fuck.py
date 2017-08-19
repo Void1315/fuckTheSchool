@@ -50,7 +50,7 @@ class Login(object):
         'pcInfo':'''Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)x860 SN:NULL'''
     }
     the_seed =  None
-
+    the_link = None
     def __init__(self,the_list):
         self.setInfo(the_list)
         
@@ -81,9 +81,11 @@ class Login(object):
             print('退出')
             self.the_db.set_query(str(self.postdata['UserID']))#设置为不查询
             self.logout()
+            self.the_link.sendReturn('1')
             return True
         if doc.select('#divLogNote')[0].string == '账号或密码不正确！请重新输入。':
             print('密码错误'+str(self.postdata['UserID']))
+            self.the_link.sendReturn('0')
             return True
         else:
             print(doc.select('#divLogNote')[0].string)
@@ -117,9 +119,13 @@ the_link = LinkService()
 
 # for i in the_list_info:
 while 1:
+    print('等待数据')
     stu_data = the_link.witeData()
+    print('获取数据'+str(stu_data))
+    
     list_data = stu_data.split(',')
     the_obj = Login(list_data)
+    the_obj.the_link = the_link
     the_obj.the_db = my_db
     the_obj.save_img()#保存回话 还保存图片 
 
@@ -133,7 +139,7 @@ while 1:
     
     while not the_obj.the_send():
         print("验证码失败...正在重试")
-        # time.sleep(1)
+        time.sleep(1)
         the_obj.save_img()#保存cookie 还保存图片 
         img_obj = ReadImage(Image.open(the_obj.img_name))#传给 读取类
         # code = img_obj.getSVMCode()#返回验证码

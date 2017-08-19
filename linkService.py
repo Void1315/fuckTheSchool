@@ -11,9 +11,10 @@ class LinkService():
 	socket = None
 	myLinkData = 'wtmsb'
 
-	def __init__(self, arg):
+	def __init__(self):
 		self.socket = socket.socket()
 		self.connect = self.socket.connect((self.address,self.prot))
+		self.sendIsMyLink()
 
 	def sendIsMyLink(self):
 		self.socket.sendall(self.myLinkData.encode('utf-8'))
@@ -22,4 +23,8 @@ class LinkService():
 		等待服务端给我传输数据,并返回
 		'''
 		str_ = self.socket.recv(1024)
+		while sum(str_) == 0:
+			str_ = self.socket.recv(1024)
 		return str_.decode()
+	def sendReturn(self,str_):
+		self.socket.sendall(str_.encode('utf-8'))
